@@ -1,0 +1,115 @@
+                var chatMessage = {
+                    type: 'CHAT',
+                    content: messageContent,
+                    sender: username,
+                    roomId: roomId
+                };
+                
+                stompClient.send("/app/chat.sendMessage/" + roomId, {}, JSON.stringify(chatMessage));
+                messageInput.value = '';
+            }
+        }
+        
+        // Handle received message
+        function onMessageReceived(payload) {
+            var message = JSON.parse(payload.body);
+            var messageArea = document.getElementById('messageArea');
+            
+            // Create message element
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            
+            if (message.type === 'JOIN') {
+                messageElement.classList.add('message-system');
+                // Add participant to the list
+                addParticipant(message.sender);
+            } else if (message.type === 'LEAVE') {
+                messageElement.classList.add('message-system');
+                // Remove participant from the list
+                removeParticipant(message.sender);
+            } else {
+                if (message.sender === username) {
+                    messageElement.classList.add('message-self');
+                } else {
+                    messageElement.classList.add('message-other');
+                    var senderElement = document.createElement('div');
+                    senderElement.classList.add('sender');
+                    senderElement.textContent = message.sender;
+                    messageElement.appendChild(senderElement);
+                    
+                    // Add participant to the list if not already there
+                    addParticipant(message.sender);
+                }
+            }
+            
+            var textElement = document.createElement('div');
+            textElement.textContent = message.content;
+            
+            var timeElement = document.createElement('div');
+            timeElement.classList.add('time');
+            var messageTime = message.timestamp ? new Date(message.timestamp) : new Date();
+            timeElement.textContent = formatDate(messageTime);
+            
+            messageElement.appendChild(textElement);
+            messageElement.appendChild(timeElement);
+            
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+        
+        // Add participant to the list
+        function addParticipant(username) {
+            if (!participants.has(username)) {
+                participants.add(username);
+                updateParticipantsList();
+            }
+        }
+        
+        // Remove participant from the list
+        function removeParticipant(username) {
+            if (participants.has(username)) {
+                participants.delete(username);
+                updateParticipantsList();
+            }
+        }
+        
+        // Update the participants list
+        function updateParticipantsList() {
+            var participantsList = document.getElementById('participantsList');
+            participantsList.innerHTML = '';
+            
+            participants.forEach(function(username) {
+                var participantElement = document.createElement('div');
+                participantElement.classList.add('participant');
+                if (username === window.username) {
+                    participantElement.classList.add('active');
+                    participantElement.textContent = username + ' (You)';
+                } else {
+                    participantElement.textContent = username;
+                }
+                participantsList.appendChild(participantElement);
+            });
+        }
+        
+        // Disconnect when leaving the page
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected");
+        }
+        
+        // Initialize
+        window.onload = function() {
+            addParticipant(username); // Add current user to the list
+            connect();
+            document.getElementById('messageForm').addEventListener('submit', sendMessage);
+        };
+        
+        // Cleanup on window unload
+        window.onbeforeunload = disconnect;
+        /*]]>*/
+    </script>
+</body>
+</html>
+
