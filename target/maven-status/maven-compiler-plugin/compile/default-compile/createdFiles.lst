@@ -3,6 +3,7 @@ com\bluechat\controller\UserController.class
 com\bluechat\controller\WebSocketController.class
 com\bluechat\model\ChatMessage.class
 com\bluechat\service\ChatService.class
+com\bluechat\config\WebConfig.class
 com\bluechat\controller\ChatController.class
 com\bluechat\model\ChatRoom.class
 com\bluechat\model\User.class
