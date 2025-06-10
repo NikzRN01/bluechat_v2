@@ -2,7 +2,7 @@ services:
   - type: web
     name: bluechat-v2
     env: java
-    buildCommand: "chmod +x ./mvnw && ./mvnw clean package -DskipTests"
+    buildCommand: "bash render-build.sh"
     startCommand: "java -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar --server.port=$PORT"
     envVars:
       - key: JAVA_OPTS

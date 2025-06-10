@@ -1,0 +1,15 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "java -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar"
+restartPolicyType = "always"
+
+[environments.production.variables]
+JAVA_VERSION = "21"
+MAVEN_ARGS = "clean package -DskipTests"
+
+[environments.production.deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
