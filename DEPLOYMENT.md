@@ -64,8 +64,11 @@ This guide covers multiple deployment options to get your BlueChat application o
 2. Create new "Web Service" on Render
 3. Connect your GitHub repo
 4. Use these settings:
-   - **Build Command:** `./mvnw clean package -DskipTests`
+   - **Environment:** `Java`
+   - **Build Command:** `chmod +x ./mvnw && ./mvnw clean package -DskipTests`
    - **Start Command:** `java -Dserver.port=$PORT -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar`
+5. **Environment Variables (Optional):**
+   - `JAVA_OPTS`: `-Xmx300m -Xms300m`
 
 **Cost:** Free tier available (slower startup)
 

@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: bluechat-v2
+    env: java
+    buildCommand: "chmod +x ./mvnw && ./mvnw clean package -DskipTests"
+    startCommand: "java -Dserver.port=$PORT -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: JAVA_OPTS
+        value: "-Xmx300m -Xms300m"
+      - key: SERVER_PORT
+        value: "$PORT"
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+    disk:
+      name: bluechat-storage
+      mountPath: /opt/render/project/src
+      sizeGB: 1
+
