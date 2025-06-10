@@ -9,6 +9,8 @@ services:
         value: "-Xmx300m -Xms300m"
       - key: SERVER_PORT
         value: "$PORT"
+      - key: JAVA_VERSION
+        value: "17"
     scaling:
       minInstances: 1
       maxInstances: 1
