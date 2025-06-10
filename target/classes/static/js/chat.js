@@ -177,7 +177,10 @@ function onMessageReceived(payload) {
     // Create message element
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
-    messageElement.classList.add('clearfix');
+    
+    // Create message bubble
+    const bubbleElement = document.createElement('div');
+    bubbleElement.classList.add('message-bubble');
     
     // Style based on message type
     if (message.type === 'JOIN') {
@@ -195,10 +198,12 @@ function onMessageReceived(payload) {
             messageElement.classList.add('message-self');
         } else {
             messageElement.classList.add('message-other');
+            
+            // Add sender name for other users
             const senderElement = document.createElement('div');
             senderElement.classList.add('sender');
             senderElement.textContent = message.sender;
-            messageElement.appendChild(senderElement);
+            bubbleElement.appendChild(senderElement);
             
             // Add participant to the list if not already there
             addParticipant(message.sender);
@@ -209,7 +214,7 @@ function onMessageReceived(payload) {
     const textElement = document.createElement('div');
     textElement.classList.add('message-content');
     textElement.textContent = message.content;
-    messageElement.appendChild(textElement);
+    bubbleElement.appendChild(textElement);
     
     // Add timestamp
     const timeElement = document.createElement('div');
@@ -229,7 +234,10 @@ function onMessageReceived(payload) {
         messageTime = new Date();
     }
     timeElement.textContent = formatTime(messageTime);
-    messageElement.appendChild(timeElement);
+    bubbleElement.appendChild(timeElement);
+    
+    // Append bubble to message
+    messageElement.appendChild(bubbleElement);
     
     // Add to message area
     messageArea.appendChild(messageElement);
