@@ -11,3 +11,4 @@ com\bluechat\service\UserService.class
 com\bluechat\config\SecurityConfig.class
 com\bluechat\model\ChatMessage$MessageType.class
 com\bluechat\config\WebSocketConfig.class
+com\bluechat\config\WebSocketEventListener.class

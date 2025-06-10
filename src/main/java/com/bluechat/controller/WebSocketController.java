@@ -38,23 +38,41 @@ public class WebSocketController {
      * @return the message to broadcast (same as input but with sender info)
      */
     @MessageMapping("/chat.sendMessage/{roomId}")
-    public ChatMessage sendMessage(
+    public void sendMessage(
             @DestinationVariable String roomId,
             @Payload ChatMessage message,
             Principal principal) {
         
-        // Set sender and timestamp if not already set
+        System.out.println("Received message: " + message.getContent() + " from " + message.getSender());
+        
+        // Set sender if not already set, handle null principal
         if (message.getSender() == null || message.getSender().isEmpty()) {
-            message.setSender(principal.getName());
+            if (principal != null) {
+                message.setSender(principal.getName());
+            } else {
+                // This shouldn't happen in normal operation, but let's handle it gracefully
+                message.setSender("Unknown");
+                System.err.println("Warning: Both message sender and principal are null");
+            }
         }
         
         // Ensure the roomId is set
         message.setRoomId(roomId);
         
+        // Set message type to CHAT if not specified
+        if (message.getType() == null) {
+            message.setType(ChatMessage.MessageType.CHAT);
+        }
+        
+        // Set timestamp
+        if (message.getTimestamp() == null) {
+            message.setTimestamp(java.time.LocalDateTime.now());
+        }
+        
+        System.out.println("Broadcasting message to room: " + roomId);
+        
         // Use the chat service to broadcast the message
         chatService.sendMessage(message);
-        
-        return message;
     }
 
     /**
@@ -73,7 +91,17 @@ public class WebSocketController {
             SimpMessageHeaderAccessor headerAccessor,
             Principal principal) {
         
-        String username = principal.getName();
+        String username;
+        if (principal != null) {
+            username = principal.getName();
+        } else {
+            // Fallback to sender from message if principal is null
+            username = message.getSender();
+            if (username == null || username.isEmpty()) {
+                // Use a default username if all else fails
+                username = "Anonymous";
+            }
+        }
         
         // Add username to web socket session
         headerAccessor.getSessionAttributes().put("username", username);

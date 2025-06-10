@@ -25,10 +25,22 @@ public class WebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        String username = (String) headerAccessor.getUser().getName();
+        
+        // Get username safely
+        String username = null;
+        if (headerAccessor.getUser() != null) {
+            username = headerAccessor.getUser().getName();
+        } else {
+            // Try to get from session attributes as fallback
+            username = (String) headerAccessor.getSessionAttributes().get("username");
+        }
         
         // Log connection
-        System.out.println("User connected: " + username + " (Session ID: " + sessionId + ")");
+        if (username != null) {
+            System.out.println("User connected: " + username + " (Session ID: " + sessionId + ")");
+        } else {
+            System.out.println("Anonymous user connected (Session ID: " + sessionId + ")");
+        }
     }
 
     @EventListener
@@ -47,7 +59,7 @@ public class WebSocketEventListener {
             chatService.removeUserFromRoom(roomId, username);
             
             // Remove user session
-            userService.removeUserSession(sessionId);
+            userService.removeUserSession(username, sessionId);
         }
     }
 }

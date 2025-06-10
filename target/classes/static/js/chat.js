@@ -66,10 +66,16 @@ function connect() {
             
             // Show connected status
             showConnectionStatus(true);
+            
+            // Enable send button
+            document.getElementById('sendButton').disabled = false;
         },
         function(error) {
             console.error('WebSocket connection error: ', error);
             showConnectionStatus(false);
+            
+            // Disable send button
+            document.getElementById('sendButton').disabled = true;
             
             // Attempt reconnection
             if (reconnectCount < MAX_RECONNECT_ATTEMPTS) {
@@ -163,7 +169,9 @@ function sendMessage(event) {
  * @param {Object} payload - Message payload from STOMP
  */
 function onMessageReceived(payload) {
+    console.log('Received message payload:', payload.body);
     const message = JSON.parse(payload.body);
+    console.log('Parsed message:', message);
     const messageArea = document.getElementById('messageArea');
     
     // Create message element
@@ -206,7 +214,20 @@ function onMessageReceived(payload) {
     // Add timestamp
     const timeElement = document.createElement('div');
     timeElement.classList.add('time');
-    const messageTime = message.timestamp ? new Date(message.timestamp) : new Date();
+    let messageTime;
+    if (message.timestamp) {
+        // Handle LocalDateTime format from Java (array format)
+        if (Array.isArray(message.timestamp)) {
+            // LocalDateTime is serialized as [year, month, day, hour, minute, second, nano]
+            const [year, month, day, hour, minute, second] = message.timestamp;
+            messageTime = new Date(year, month - 1, day, hour, minute, second); // month is 0-indexed in JS
+        } else {
+            // Try to parse as ISO string
+            messageTime = new Date(message.timestamp);
+        }
+    } else {
+        messageTime = new Date();
+    }
     timeElement.textContent = formatTime(messageTime);
     messageElement.appendChild(timeElement);
     
@@ -306,4 +327,25 @@ function showConnectionStatus(connected) {
         }
     }
 }
+
+// Auto-initialization when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameElement = document.getElementById('username');
+    const roomIdElement = document.getElementById('roomId');
+    const roomNameElement = document.getElementById('roomName');
+    
+    if (usernameElement && roomIdElement && roomNameElement) {
+        const currentUsername = usernameElement.value;
+        const currentRoomId = roomIdElement.value;
+        const currentRoomName = roomNameElement.value;
+        
+        if (currentUsername && currentRoomId && currentRoomName) {
+            initChat(currentUsername, currentRoomId, currentRoomName);
+        } else {
+            console.error('Missing required chat initialization parameters');
+        }
+    } else {
+        console.error('Chat initialization elements not found');
+    }
+});
 
