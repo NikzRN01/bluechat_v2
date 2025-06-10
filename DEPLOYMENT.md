@@ -66,7 +66,7 @@ This guide covers multiple deployment options to get your BlueChat application o
 4. Use these settings:
    - **Environment:** `Java`
    - **Build Command:** `chmod +x ./mvnw && ./mvnw clean package -DskipTests`
-   - **Start Command:** `java -Dserver.port=$PORT -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar`
+   - **Start Command:** `java -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar --server.port=$PORT`
 5. **Environment Variables (Optional):**
    - `JAVA_OPTS`: `-Xmx300m -Xms300m`
 

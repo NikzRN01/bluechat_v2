@@ -3,7 +3,7 @@ services:
     name: bluechat-v2
     env: java
     buildCommand: "chmod +x ./mvnw && ./mvnw clean package -DskipTests"
-    startCommand: "java -Dserver.port=$PORT -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar"
+    startCommand: "java -jar target/bluechat-v2-0.0.1-SNAPSHOT.jar --server.port=$PORT"
     envVars:
       - key: JAVA_OPTS
         value: "-Xmx300m -Xms300m"
