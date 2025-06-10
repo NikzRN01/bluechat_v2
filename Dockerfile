@@ -1,5 +1,5 @@
-# Use OpenJDK 21 as base image
-FROM openjdk:21-jdk-slim
+# Use OpenJDK 17 as base image
+FROM openjdk:17-jdk-slim
 
 # Set working directory
 WORKDIR /app
@@ -24,5 +24,5 @@ RUN ./mvnw clean package -DskipTests
 EXPOSE 8080
 
 # Run the application
-CMD ["java", "-jar", "target/bluechat-v2-0.0.1-SNAPSHOT.jar", "--server.port=8080"]
+CMD ["java", "-jar", "target/bluechat-v2-0.0.1-SNAPSHOT.jar", "--server.port=${PORT:-8080}"]
 
